@@ -4,14 +4,10 @@ eventful-django
 |pypi-badge| |travis-badge| |codecov-badge| |doc-badge| |pyversions-badge|
 |license-badge|
 
-The ``README.rst`` file should start with a brief description of the repository,
-which sets it in the context of other repositories under the ``edx``
-organization. It should make clear where this fits in to the overall edX
-codebase.
+event broadcasting and subscription managment app built for django.
+used internally at Cognitev to build microservices with and event driven architecture.
 
-Eventful Django
-
-Overview (please modify)
+Getting Started
 ------------------------
 
 The ``README.rst`` file should then provide an overview of the code in this
@@ -38,9 +34,6 @@ Contributions are very welcome.
 
 Please read `How To Contribute <https://github.com/edx/edx-platform/blob/master/CONTRIBUTING.rst>`_ for details.
 
-Even though they were written with ``edx-platform`` in mind, the guidelines
-should be followed for Open edX code in general.
-
 PR description template should be automatically applied if you are sending PR from github interface; otherwise you
 can find it it at `PULL_REQUEST_TEMPLATE.md <https://github.com/edx/eventful-django/blob/master/.github/PULL_REQUEST_TEMPLATE.md>`_
 
@@ -57,9 +50,6 @@ Getting Help
 
 Have a question about this repository, or about Open edX in general?  Please
 refer to this `list of resources`_ if you need any assistance.
-
-.. _list of resources: https://open.edx.org/getting-help
-
 
 .. |pypi-badge| image:: https://img.shields.io/pypi/v/eventful-django.svg
     :target: https://pypi.python.org/pypi/eventful-django/
