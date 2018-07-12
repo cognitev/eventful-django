@@ -39,19 +39,19 @@ setup(
     version=VERSION,
     description="""Eventful Django""",
     long_description=README + '\n\n' + CHANGELOG,
-    author='edX',
-    author_email='oscm@edx.org',
-    url='https://github.com/edx/eventful-django',
+    author=['AlSayed Gamal', 'Seif Sarofim'],
+    author_email='mail.gamal@gmail.com',
+    url='https://github.com/AlSayedGamal/eventful-django',
     packages=[
         'eventful_django',
     ],
     include_package_data=True,
     install_requires=[
-        "Django>=1.8,<2.1", "django-model-utils>=2.0"
+        "Django>=1.8,<2.1", "django-model-utils>=2.0", "celery>=4.1", "requests"
     ],
     license="AGPL 3.0",
     zip_safe=False,
-    keywords='Django edx',
+    keywords='Django',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Framework :: Django',

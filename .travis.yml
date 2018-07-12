@@ -18,9 +18,7 @@ matrix:
   include:
     - python: 3.6
       env: TOXENV=quality
-    - python: 3.6
-      env: TOXENV=docs
-
+      
 cache:
   - pip
   
@@ -35,13 +33,3 @@ script:
 
 after_success:
   - codecov
-
-# Set password via "travis encrypt --add deploy.password"; for details, see
-# https://docs.travis-ci.com/user/deployment/pypi
-deploy:
-  provider: pypi
-  user: edx
-  distributions: sdist bdist_wheel
-  on:
-    tags: true
-    condition: '$TOXENV = quality'
