@@ -3,13 +3,16 @@ Celery task for eventful_django
 """
 from __future__ import absolute_import, unicode_literals
 
+from os import environ
+
 import requests
 from celery import Celery
 
-CELERY_APP = Celery('eventful_tasks', backend='amqp', broker='amqp://localhost//')
+CELERY_APP = Celery('eventful_tasks', backend=environ.get('EVENTFUL_BROKER_BACKEND', 'amqp'),
+                    broker=environ.get('EVENTFUL_BROKER_URL', 'amqp://localhost//'))
 
 
-@CELERY_APP.task(bind=True)
+@CELERY_APP.task()
 def notify(webhook, event, payload):
     """
     notifies webhook by sending it POST request.
