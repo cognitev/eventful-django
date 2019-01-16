@@ -18,8 +18,8 @@ class TestEventDispatch(TestCase):
     """
     Testing event notification dispatching
     """
-    @mock.patch("eventful_django.eventful_tasks.notify.apply_async",
-                side_effect=APPLY_ASYNC)
+
+    @mock.patch("eventful_django.eventful_tasks.notify.apply_async", side_effect=APPLY_ASYNC)
     def test_firing_event_notifies_subscribers(self, req_mock):
         new_event = Event(event_id="HELLO", retry_policy='{"max_retries": 3}')
         new_event.save()
@@ -29,12 +29,20 @@ class TestEventDispatch(TestCase):
 
         Event.dispatch("HELLO", {"foo": "bar"})
         self.assertEqual(req_mock.call_count, 1)
-        req_mock.assert_called_with((new_subscriber.webhook,
-                                     new_event.event_id, {"foo": "bar"}), retry=True,
-                                    retry_policy=json.loads(new_event.retry_policy))
+        req_mock.assert_called_with(
+            (
+                new_subscriber.webhook,
+                new_event.event_id,
+                {
+                    "foo": "bar"
+                },
+                {},
+            ),
+            retry=True,
+            retry_policy=json.loads(new_event.retry_policy),
+        )
 
-    @mock.patch("eventful_django.eventful_tasks.notify.apply_async",
-                side_effect=APPLY_ASYNC)
+    @mock.patch("eventful_django.eventful_tasks.notify.apply_async", side_effect=APPLY_ASYNC)
     def test_firing_event_notifies_all_subscribers(self, req_mock):
         new_event = Event(event_id="HELLO", retry_policy='{"max_retries": 3}')
         new_event.save()
@@ -50,12 +58,20 @@ class TestEventDispatch(TestCase):
 
         Event.dispatch("HELLO", {"foo": "bar"})
         self.assertEqual(req_mock.call_count, 3)
-        req_mock.assert_called_with((new_subscriber.webhook,
-                                     new_event.event_id, {"foo": "bar"}), retry=True,
-                                    retry_policy=json.loads(new_event.retry_policy))
+        req_mock.assert_called_with(
+            (
+                new_subscriber.webhook,
+                new_event.event_id,
+                {
+                    "foo": "bar"
+                },
+                {},
+            ),
+            retry=True,
+            retry_policy=json.loads(new_event.retry_policy),
+        )
 
-    @mock.patch("eventful_django.eventful_tasks.notify.apply_async",
-                side_effect=APPLY_ASYNC)
+    @mock.patch("eventful_django.eventful_tasks.notify.apply_async", side_effect=APPLY_ASYNC)
     def test_firing_event_notifies_all_subscribers_different_events(self, req_mock):
         new_event = Event(event_id="HELLO", retry_policy='{"max_retries": 3}')
         new_event.save()
@@ -74,13 +90,41 @@ class TestEventDispatch(TestCase):
 
         Event.dispatch("HELLO", {"foo": "bar"})
         self.assertEqual(req_mock.call_count, 2)
-        req_mock.assert_called_with((new_subscriber.webhook,
-                                     new_event.event_id, {"foo": "bar"}), retry=True,
-                                    retry_policy=json.loads(new_event.retry_policy))
+        req_mock.assert_called_with(
+            (
+                new_subscriber.webhook,
+                new_event.event_id,
+                {
+                    "foo": "bar"
+                },
+                {},
+            ),
+            retry=True,
+            retry_policy=json.loads(new_event.retry_policy),
+        )
 
-    # def test_firing_event_notifies_subscribers(self):
-    #     new_event = Event(id="HELLO", retry_policy='{"max_retries": 3}')
-    #     new_event.save()
-    #     new_subscriber = Subscription(webhook="http://gamal.com", event=new_event)
-    #     new_subscriber.save()
-    #     Event.dispatch("HELLO", {"foo": "bar"})
+    @mock.patch("eventful_django.eventful_tasks.notify.apply_async", side_effect=APPLY_ASYNC)
+    def test_firing_event_notifies_subscribers_with_headers(self, req_mock):
+        new_event = Event(event_id="HELLO", retry_policy='{"max_retries": 3}')
+        new_event.save()
+
+        new_subscriber = Subscription(
+            webhook="http://gamal.com", event=new_event, headers={'test': 'headers'})
+        new_subscriber.save()
+
+        Event.dispatch("HELLO", {"foo": "bar"})
+        self.assertEqual(req_mock.call_count, 1)
+        req_mock.assert_called_with(
+            (
+                new_subscriber.webhook,
+                new_event.event_id,
+                {
+                    "foo": "bar"
+                },
+                {
+                    'test': 'headers'
+                },
+            ),
+            retry=True,
+            retry_policy=json.loads(new_event.retry_policy),
+        )

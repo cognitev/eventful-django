@@ -19,6 +19,7 @@ class Subscription(models.Model):
     """
     webhook = models.URLField('Web Hook URL')
     event = models.ForeignKey("eventful_django.Event", on_delete=models.CASCADE)
+    headers = models.TextField('Request Headers', null=True)
 
     class Meta:
         unique_together = (("webhook", "event"))
@@ -55,9 +56,13 @@ class Event(models.Model):
         task notify. Payload sent to all.
         """
         for subscription in self.subscription_set.all():
+            headers = eval(subscription.headers or '{}')
             try:
-                notify.apply_async((subscription.webhook, self.event_id, payload),
-                                   retry=True, retry_policy=json.loads(self.retry_policy))
+                notify.apply_async(
+                    (subscription.webhook, self.event_id, payload, headers),
+                    retry=True,
+                    retry_policy=json.loads(self.retry_policy),
+                )
             except notify.OperationalError as notification_error:
                 print(notification_error)
 
