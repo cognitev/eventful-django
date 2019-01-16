@@ -8,12 +8,14 @@ from os import environ
 import requests
 from celery import Celery
 
-CELERY_APP = Celery('eventful_tasks', backend=environ.get('EVENTFUL_BROKER_BACKEND', 'amqp'),
-                    broker=environ.get('EVENTFUL_BROKER_URL', 'amqp://localhost//'))
+CELERY_APP = Celery(
+    'eventful_tasks',
+    backend=environ.get('EVENTFUL_BROKER_BACKEND', 'amqp'),
+    broker=environ.get('EVENTFUL_BROKER_URL', 'amqp://localhost//'))
 
 
 @CELERY_APP.task()
-def notify(webhook, event, payload):
+def notify(webhook, event, payload, headers):
     """
     notifies webhook by sending it POST request.
     playload sent by caller.
@@ -23,7 +25,15 @@ def notify(webhook, event, payload):
     :type payload: dict
     """
     try:
-        response = requests.request('POST', webhook, json={"event": event, "payload": payload})
+        response = requests.request(
+            'POST',
+            webhook,
+            json={
+                "event": event,
+                "payload": payload
+            },
+            headers=headers,
+        )
         response.raise_for_status()
     except requests.exceptions.HTTPError as error:
         print(error)
