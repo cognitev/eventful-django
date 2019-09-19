@@ -11,3 +11,5 @@ idna==2.7                 # via requests
 pytz==2018.5              # via django
 requests==2.19.1
 urllib3==1.23             # via requests
+firebase-admin==3.0.0
+celery==4.3.0
