@@ -9,9 +9,8 @@ import json
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from os import environ
-from .eventful_tasks import notify
-import requests
-from google.cloud import pubsub_v1
+from .eventful_tasks import notify, notify_pubsub
+from itertools import chain
 
 PROJECT_ID = environ.get('GOOGLE_PROJECT_ID', 'cogni-sandbox')
 
@@ -35,28 +34,12 @@ class Subscription(models.Model):
         """
         return self.webhook
 
-    def notify(self, webhook, event, payload, headers):
-        """
-        notifies webhook by sending it POST request.
-        playload sent by caller.
-        func is celery task to allow async operation.
-        :type webhook: string
-        :type event: string
-        :type payload: dict
-        """
-        try:
-            response = requests.request(
-                'POST',
-                webhook,
-                json={
-                    "event": event,
-                    "payload": payload
-                },
-                headers=headers,
-            )
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
-            print(error)
+    def notify(self, event, payload, headers, retry_policy):
+        notify.apply_async(
+            (self.webhook, event, payload, headers),
+            retry=True,
+            retry_policy=json.loads(retry_policy),
+        )
 
 
 @python_2_unicode_compatible
@@ -78,22 +61,12 @@ class SubscriptionPubSub(models.Model):
         """
         return self.topic
 
-    def notify(self, topic, event, payload, headers):
-        """
-        notifies topics by publsihing on it.
-        playload sent by caller.
-        func is celery task to allow async operation.
-        :type topic: string
-        :type event: string
-        :type payload: dict
-        """
-        try:
-            publisher = pubsub_v1.PublisherClient()
-            topic_path = publisher.topic_path(PROJECT_ID, topic)
-            payload_string = json.dumps(payload).encode('utf-8')
-            publisher.publish(topic_path, data=payload_string)
-        except Exception as e:
-            print(e)
+    def notify(self, event, payload, headers, retry_policy):
+        notify_pubsub.apply_async(
+            (self.topic, event, payload, headers),
+            retry=True,
+            retry_policy=json.loads(retry_policy),
+        )
 
 
 class Event(models.Model):
@@ -120,27 +93,12 @@ class Event(models.Model):
         Notifies subscriptions async via celery
         task notify. Payload sent to all.
         """
-        for subscription in self.subscription_set.all():
+        for subscription in list(
+                chain(self.subscription_set.all(),
+                      self.subscriptionpubsub_set.all())):
             headers = eval(subscription.headers or '{}')
             try:
-                notify.apply_async(
-                    (subscription.webhook, self.event_id, payload, headers,
-                     subscription),
-                    retry=True,
-                    retry_policy=json.loads(self.retry_policy),
-                )
-            except notify.OperationalError as notification_error:
-                print(notification_error)
-
-        for subscription in self.subscriptionpubsub_set.all():
-            headers = eval(subscription.headers or '{}')
-            try:
-                notify.apply_async(
-                    (subscription.topic, self.event_id, payload, headers,
-                     subscription),
-                    retry=True,
-                    retry_policy=json.loads(self.retry_policy),
-                )
+                subscription.notify(self.event_id, payload, headers, self.retry_policy)
             except notify.OperationalError as notification_error:
                 print(notification_error)
 
