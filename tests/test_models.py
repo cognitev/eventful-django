@@ -10,7 +10,7 @@ import mock
 from django.test import TestCase
 
 from eventful_django.models import Event, Subscription
-
+from eventful_django.eventful_tasks import notify_pubsub
 APPLY_ASYNC = mock.Mock()
 
 
@@ -18,6 +18,20 @@ class TestEventDispatch(TestCase):
     """
     Testing event notification dispatching
     """
+
+    @mock.patch("eventful_django.eventful_tasks.pubsub_v1")
+    def test_pubsub_event_trigger(self, pubsub_mock):
+        client_mock= mock.Mock()
+        pubsub_mock.PublisherClient = client_mock
+        publish_mock = mock.Mock()
+        client_mock.publish = publish_mock
+        topic = "test_topic"
+        event = "test_event"
+        payload = {}
+        notify_pubsub(topic, event, payload)
+        self.assertEqual(client_mock.call_count, 1)
+        client_mock.assert_called_with()
+        
 
     @mock.patch("eventful_django.eventful_tasks.notify.apply_async", side_effect=APPLY_ASYNC)
     def test_firing_event_notifies_subscribers(self, req_mock):

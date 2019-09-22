@@ -12,8 +12,6 @@ from os import environ
 from .eventful_tasks import notify, notify_pubsub
 from itertools import chain
 
-PROJECT_ID = environ.get('GOOGLE_PROJECT_ID', 'cogni-sandbox')
-
 
 @python_2_unicode_compatible
 class Subscription(models.Model):
@@ -63,7 +61,7 @@ class SubscriptionPubSub(models.Model):
 
     def notify(self, event, payload, headers, retry_policy):
         notify_pubsub.apply_async(
-            (self.topic, event, payload, headers),
+            (self.topic, event, payload),
             retry=True,
             retry_policy=json.loads(retry_policy),
         )
@@ -93,12 +91,14 @@ class Event(models.Model):
         Notifies subscriptions async via celery
         task notify. Payload sent to all.
         """
-        for subscription in list(
-                chain(self.subscription_set.all(),
-                      self.subscriptionpubsub_set.all())):
+        subscriptions = list(
+            chain(self.subscription_set.all(),
+                  self.subscriptionpubsub_set.all()))
+        for subscription in subscriptions:
             headers = eval(subscription.headers or '{}')
             try:
-                subscription.notify(self.event_id, payload, headers, self.retry_policy)
+                subscription.notify(self.event_id, payload, headers,
+                                    self.retry_policy)
             except notify.OperationalError as notification_error:
                 print(notification_error)
 
