@@ -43,7 +43,7 @@ def notify(webhook, event, payload, headers):
 
 
 @CELERY_APP.task()
-def notify_pubsub(topic, event, payload):
+def notify_pubsub(topic, payload):
     """
     notifies topics by publsihing on it.
     playload sent by caller.

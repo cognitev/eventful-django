@@ -9,8 +9,8 @@ import json
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from os import environ
-from .eventful_tasks import notify, notify_pubsub
 from itertools import chain
+from .eventful_tasks import notify, notify_pubsub
 
 
 @python_2_unicode_compatible
@@ -61,7 +61,7 @@ class SubscriptionPubSub(models.Model):
 
     def notify(self, event, payload, headers, retry_policy):
         notify_pubsub.apply_async(
-            (self.topic, event, payload),
+            (self.topic, payload),
             retry=True,
             retry_policy=json.loads(retry_policy),
         )
