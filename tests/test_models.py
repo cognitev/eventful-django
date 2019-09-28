@@ -4,11 +4,13 @@ Tests for the `eventful-django` models module.
 from __future__ import absolute_import, unicode_literals
 
 import json
-import mock
+
 from django.test import TestCase
 
-from eventful_django.models import Event, Subscription
+import mock
 from eventful_django.eventful_tasks import notify_pubsub
+from eventful_django.models import Event, Subscription
+
 APPLY_ASYNC = mock.Mock()
 
 

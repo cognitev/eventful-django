@@ -5,11 +5,11 @@ Database models for eventful_django.
 from __future__ import absolute_import, unicode_literals
 
 import json
+from itertools import chain
 
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from os import environ
-from itertools import chain
+
 from .eventful_tasks import notify, notify_pubsub
 
 
@@ -33,6 +33,9 @@ class Subscription(models.Model):
         return self.webhook
 
     def notify(self, event, payload, headers, retry_policy):
+        """
+        Start Notify Job for specified url hook
+        """
         notify.apply_async(
             (self.webhook, event, payload, headers),
             retry=True,
@@ -59,7 +62,10 @@ class SubscriptionPubSub(models.Model):
         """
         return self.topic
 
-    def notify(self, event, payload, headers, retry_policy):
+    def notify(self, event, payload, headers, retry_policy):  # pylint: disable=unused-argument
+        """
+        Start Notify Job for pubsub
+        """
         notify_pubsub.apply_async(
             (self.topic, payload),
             retry=True,
@@ -95,7 +101,7 @@ class Event(models.Model):
             chain(self.subscription_set.all(),
                   self.subscriptionpubsub_set.all()))
         for subscription in subscriptions:
-            headers = eval(subscription.headers or '{}')
+            headers = eval(subscription.headers or '{}')  # pylint: disable=eval-used
             try:
                 subscription.notify(self.event_id, payload, headers,
                                     self.retry_policy)

@@ -3,12 +3,13 @@ Celery task for eventful_django
 """
 from __future__ import absolute_import, unicode_literals
 
+import json
 from os import environ
 
 import requests
+
 from celery import Celery
 from google.cloud import pubsub_v1
-import json
 
 CELERY_APP = Celery('eventful_tasks',
                     backend=environ.get('EVENTFUL_BROKER_BACKEND', 'amqp'),
@@ -53,7 +54,7 @@ def notify_pubsub(topic, payload):
     :type payload: dict
     """
     publisher = pubsub_v1.PublisherClient()
-    topic_path = publisher.topic_path(PROJECT_ID, topic)
+    topic_path = publisher.topic_path(PROJECT_ID, topic)  # pylint: disable=no-member
     payload_string = json.dumps(payload).encode('utf-8')
     publisher.publish(topic_path, data=payload_string)
 
