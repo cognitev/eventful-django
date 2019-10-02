@@ -1,7 +1,7 @@
 # eventful-django
 
+[![Build Status](https://travis-ci.org/cognitev/eventful-django.svg?branch=master)](https://travis-ci.org/cognitev/eventful-django)
 ![pypi-badge](https://img.shields.io/pypi/v/eventful-django.svg%0A%20:target:%20https://pypi.python.org/pypi/eventful-django/%0A%20:alt:%20PyPI)
-![travis-badge](https://travis-ci.org/edx/eventful-django.svg?branch=master%0A%20:target:%20https://travis-ci.org/edx/eventful-django%0A%20:alt:%20Travis)
 ![codecov-badge](http://codecov.io/github/edx/eventful-django/coverage.svg?branch=master%0A%20:target:%20http://codecov.io/github/edx/eventful-django?branch=master%0A%20:alt:%20Codecov)
 ![doc-badge](https://readthedocs.org/projects/eventful-django/badge/?version=latest%0A%20:target:%20http://eventful-django.readthedocs.io/en/latest/%0A%20:alt:%20Documentation)
 ![pyversions-badge](https://img.shields.io/pypi/pyversions/eventful-django.svg%0A%20:target:%20https://pypi.python.org/pypi/eventful-django/%0A%20:alt:%20Supported%20Python%20versions)
