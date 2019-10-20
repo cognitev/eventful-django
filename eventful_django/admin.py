@@ -4,7 +4,7 @@ Registered models in dhasboard outlined below
 """
 from django.contrib import admin
 
-from .models import Event, Subscription
+from .models import Event, Subscription, SubscriptionPubSub
 
 
 class SubscriptionInLine(admin.TabularInline):
@@ -14,9 +14,16 @@ class SubscriptionInLine(admin.TabularInline):
     model = Subscription
 
 
+class SubscriptionPubSubInLine(admin.TabularInline):
+    """
+    SubscriptionPubSub diplayed in Line.
+    """
+    model = SubscriptionPubSub
+
+
 class EventAdmin(admin.ModelAdmin):
     "definition of "
-    fieldsets = [('Event Information', {"fields": ['id', 'retry_policy']})]
+    fieldsets = [('Event Information', {"fields": ['event_id', 'retry_policy']})]
     inlines = [SubscriptionInLine]
 
 
