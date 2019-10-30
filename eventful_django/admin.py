@@ -29,3 +29,4 @@ class EventAdmin(admin.ModelAdmin):
 
 admin.site.register(Event, EventAdmin)
 admin.site.register(Subscription)
+admin.site.register(SubscriptionPubSub)
