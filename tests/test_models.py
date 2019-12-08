@@ -25,8 +25,9 @@ class TestEventDispatch(TestCase):
         publish_mock = mock.Mock()
         client_mock.publish = publish_mock
         topic = "test_topic"
+        gcp_project_id = "gcp_project_id"
         payload = {}
-        notify_pubsub(topic, payload)
+        notify_pubsub(gcp_project_id, topic, payload)
         self.assertEqual(client_mock.call_count, 1)
         client_mock.assert_called_with()
 
