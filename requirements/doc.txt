@@ -19,7 +19,7 @@ html5lib==1.0.1           # via bleach
 idna==2.7                 # via requests
 imagesize==1.0.0          # via sphinx
 jinja2==2.10              # via sphinx
-markupsafe==1.0           # via jinja2
+markupsafe==1.1.1           # via jinja2
 packaging==17.1           # via sphinx
 pbr==4.1.0                # via stevedore
 pycparser==2.18           # via cffi

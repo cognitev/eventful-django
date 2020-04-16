@@ -68,6 +68,7 @@ TEMPLATES = [
     },
 ]
 
+
 ROOT_URLCONF = 'eventful_django.urls'
 
 SECRET_KEY = 'insecure-secret-key'
