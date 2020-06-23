@@ -154,3 +154,72 @@ class TestEventDispatch(TestCase):
             retry=True,
             retry_policy=json.loads(new_event.retry_policy),
         )
+
+    @mock.patch("eventful_django.models.Subscription.generate_jwt_token", return_value='token')
+    @mock.patch("eventful_django.eventful_tasks.notify.apply_async",
+                side_effect=APPLY_ASYNC)
+    def test_firing_event_notifies_subscribers_cloud_function(self, req_mock, token_mock):
+        new_event = Event(event_id="HELLO", retry_policy='{"max_retries": 3}')
+        new_event.save()
+
+        new_subscriber = Subscription(webhook="http://gamal.com",
+                                      event=new_event,
+                                      headers={'test': 'test'},
+                                      is_cloud_function=True,
+                                      client_email='test',
+                                      token_uri='www.test.uri',
+                                      private_key='private')
+        new_subscriber.save()
+
+        Event.dispatch("HELLO", {"foo": "bar"})
+        self.assertEqual(req_mock.call_count, 1)
+        self.assertEqual(token_mock.call_count, 1)
+        req_mock.assert_called_with(
+            (
+                new_subscriber.webhook,
+                new_event.event_id,
+                {
+                    "foo": "bar"
+                },
+                {
+                    'test': 'test',
+                    'Authorization': 'Bearer token'
+                },
+            ),
+            retry=True,
+            retry_policy=json.loads(new_event.retry_policy),
+        )
+
+    @mock.patch("eventful_django.models.Subscription.generate_jwt_token", return_value='token')
+    @mock.patch("eventful_django.eventful_tasks.notify.apply_async",
+                side_effect=APPLY_ASYNC)
+    def test_firing_event_notifies_subscribers_no_cloud_function(self, req_mock, token_mock):
+        new_event = Event(event_id="HELLO", retry_policy='{"max_retries": 3}')
+        new_event.save()
+
+        new_subscriber = Subscription(webhook="http://gamal.com",
+                                      event=new_event,
+                                      headers={'test': 'test'},
+                                      is_cloud_function=False,
+                                      client_email='test',
+                                      token_uri='www.test.uri',
+                                      private_key='private')
+        new_subscriber.save()
+
+        Event.dispatch("HELLO", {"foo": "bar"})
+        self.assertEqual(req_mock.call_count, 1)
+        self.assertEqual(token_mock.call_count, 0)
+        req_mock.assert_called_with(
+            (
+                new_subscriber.webhook,
+                new_event.event_id,
+                {
+                    "foo": "bar"
+                },
+                {
+                    'test': 'test',
+                },
+            ),
+            retry=True,
+            retry_policy=json.loads(new_event.retry_policy),
+        )

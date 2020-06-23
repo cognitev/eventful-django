@@ -47,7 +47,7 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
-        "Django>=1.8,<2.1", "django-model-utils>=2.0", "celery>=4.1", "requests", "google-cloud-pubsub"
+        "Django>=1.11,<2.1", "django-model-utils>=2.0", "celery>=4.1", "requests", "google-cloud-pubsub"
     ],
     license="AGPL 3.0",
     zip_safe=False,
@@ -55,14 +55,11 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Framework :: Django',
-        'Framework :: Django :: 1.8',
         'Framework :: Django :: 1.11',
         'Framework :: Django :: 2.0',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
     ],
