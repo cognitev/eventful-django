@@ -45,7 +45,7 @@ class Subscription(models.Model):
         Generate Jwt token for this endpoint.
         """
         info = {
-            "private_key": self.private_key,
+            "private_key": self.private_key.replace('\\n', '\n'),
             "client_email": self.client_email,
             "token_uri": self.token_uri,
         }
