@@ -4,21 +4,42 @@
 #
 #    pip-compile --output-file requirements/test.txt requirements/test.in
 #
-atomicwrites==1.1.5       # via pytest
-attrs==18.1.0             # via pytest
-certifi==2018.4.16        # via requests
-chardet==3.0.4            # via requests
-coverage==4.5.1           # via pytest-cov
-idna==2.7                 # via requests
+atomicwrites==1.1.5
+    # via pytest
+attrs==18.1.0
+    # via pytest
+certifi==2022.12.7
+    # via requests
+chardet==3.0.4
+    # via requests
+coverage==4.5.1
+    # via pytest-cov
+idna==2.7
+    # via requests
 mock==2.0.0
-more-itertools==4.2.0     # via pytest
-pbr==4.1.0                # via mock
-pluggy==0.6.0             # via pytest
-py==1.5.4                 # via pytest
+    # via -r test.in
+more-itertools==4.2.0
+    # via pytest
+pbr==4.1.0
+    # via mock
+pluggy==0.6.0
+    # via pytest
+py==1.5.4
+    # via pytest
+pytest==3.6.3
+    # via
+    #   pytest-cov
+    #   pytest-django
 pytest-cov==2.5.1
+    # via -r test.in
 pytest-django==3.3.2
-pytest==3.6.3             # via pytest-cov, pytest-django
+    # via -r test.in
 requests==2.19.1
-six==1.11.0               # via mock, more-itertools, pytest
-urllib3==1.23             # via requests
-google-cloud-pubsub==1.0.0
+    # via -r test.in
+six==1.11.0
+    # via
+    #   mock
+    #   more-itertools
+    #   pytest
+urllib3==1.23
+    # via requests
